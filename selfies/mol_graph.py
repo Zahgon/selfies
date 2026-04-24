@@ -55,9 +55,7 @@ class Atom:
     @property
     @functools.lru_cache()
     def bonding_capacity(self):
-        bond_cap = get_bonding_capacity(self.element, self.charge)
-        bond_cap -= 0 if (self.h_count is None) else self.h_count
-        return bond_cap
+        pass
 
     def invert_chirality(self) -> None:
         if self.chirality == "@":
@@ -285,36 +283,4 @@ class MolecularGraph:
         return True
 
     def _prune_from_ds(self, node):
-        adj_nodes = self._delocal_subgraph[node]
-        if not adj_nodes:
-            return True  # aromatic atom with no aromatic bonds
-        
-        atom = self._atoms[node]
-        valences = AROMATIC_VALENCES[atom.element]
-        
-        # each bond in DS has order 1.5 - we treat them as single bonds
-        used_electrons = int(self._bond_counts[node] - 0.5 * len(adj_nodes))
-        
-        if atom.h_count is None:  # account for implicit Hs
-            assert atom.charge == 0
-            return any(used_electrons == v for v in valences)
-        else:
-            valence = valences[-1] - atom.charge
-            used_electrons += atom.h_count
-            
-            # count the total number of bound electrons of each atom
-            bound_electrons = (max(0, atom.charge) + atom.h_count 
-                               + int(self._bond_counts[node]) 
-                               + int(2 * (self._bond_counts[node] % 1)))
-            
-            # calculate the number of unpaired electrons of each atom
-            radical_electrons = (max(0, VALENCE_ELECTRONS[atom.element] 
-                                 - bound_electrons) % 2)
-            
-            # unpaired electrons do not contribute to the aromatic system
-            free_electrons = valence - used_electrons - radical_electrons
-            
-            if any(used_electrons == v - atom.charge for v in valences):
-                return True
-            else:
-                return not ((free_electrons >= 0) and (free_electrons % 2 != 0))
+        pass
